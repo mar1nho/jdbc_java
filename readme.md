@@ -6,7 +6,7 @@ A simple application using JDBC Maven Dependencie on Java to connect to PostgreS
 ## Softwares:
 - **JDK 17:** Java Development Kit version used in this application.
 - **JDBC PostgresSQL Maven Dependency:** Maven library to connect Java to PostgresSQL database.
-- **IntelliJ:** Recomended use of IntelliJ to better performance.
+- **IntelliJ:** Recomended use of IntelliJ for better performance.
 
 ## Installation and Configuration
 1. **Prerequisites:** JDK 17 or above installed.
