@@ -39,3 +39,4 @@ build/
 
 # Arquivos a serem ignorados pelo Git
 db.properties
+Program.java
