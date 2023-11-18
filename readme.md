@@ -1,6 +1,8 @@
 <div  align="center">
-    
-###### **⚠️FULL DOCUMENTATION AVAILABLE SOON⚠️**
+
+
+###### **⚠️STILL IN DEVELOPMENT⚠️**    
+###### **🚫FULL DOCUMENTATION AVAILABLE SOON🚫**
 
 # ☕ JDBC - Java Example ☕
 
