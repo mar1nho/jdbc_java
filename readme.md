@@ -40,7 +40,7 @@
     git clone https://github.com/mar1nho/jdbc_java.git
     ```
 
-3. **Database Configuration:** Inside 'Resources', on the file 'db.properties', configure your DataBase as necessary (*PostgresSQL only*).
+3. **Database Configuration:** Inside 'Resources', on the file 'db.properties', configure your DataBase as necessary (*PostgresSQL only*). Use the script in the 'script.sql' on your Postgres to generate Tables and Data.
 
 4. **Build:** Commands needed to build the project using Maven.
     ```bash
