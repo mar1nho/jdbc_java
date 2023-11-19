@@ -1,11 +1,13 @@
 package model.dao.impl;
 
+import db.DBConnection;
 import db.DBException;
+
 import model.dao.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
 
-import javax.swing.plaf.nimbus.State;
+
 import java.sql.*;
 import java.util.*;
 
@@ -18,12 +20,65 @@ public class SellerDaoJDBC implements SellerDAO {
 	
 	@Override
 	public void insert(Seller obj) {
-	
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement("INSERT INTO seller (Name, Email, BirthDate, BaseSalary, DepartmentId) " +
+					"VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			
+			ps.setString(1, obj.getName());
+			ps.setString(2, obj.getEmail());
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			ps.setDouble(4, obj.getBaseSalary());
+			ps.setInt(5, obj.getDepartment().getId());
+			
+			int rowsAffected = ps.executeUpdate();
+			
+			if (rowsAffected > 0) {
+				ResultSet rs = ps.getGeneratedKeys();
+				if (rs.next()){
+					int id = rs.getInt(1);
+					obj.setId(id);
+					System.err.print("Done, seller registered: ");
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+					System.out.print(rs.getString("Name"));
+				}
+				DBConnection.closeResultSet(rs);
+			} else {
+				throw new DBException("Unexpected error! No rows affected.");
+			}
+		} catch (SQLException e) {
+			throw new DBException(e.getMessage());
+		}
+		finally {
+			DBConnection.closeStatement(ps);
+		}
 	}
 	
 	@Override
 	public void update(Seller obj) {
-	
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement("UPDATE seller SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? " +
+											     "WHERE Id = ?");
+			ps.setString(1, obj.getName());
+			ps.setString(2, obj.getEmail());
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			ps.setDouble(4, obj.getBaseSalary());
+			ps.setInt(5, obj.getDepartment().getId());
+			ps.setInt(6, obj.getId());
+			
+			int rowsAffected = ps.executeUpdate();
+			if (rowsAffected > 0){
+				System.err.println("Done! Seller updated: " + obj.getName());
+			}
+			
+		} catch (SQLException exception) {
+			throw new DBException(exception.getMessage());
+		}
 	}
 	
 	@Override
@@ -40,10 +95,11 @@ public class SellerDaoJDBC implements SellerDAO {
 				int affectedRows = st.executeUpdate();
 				System.out.println("Rows affected: " + affectedRows);
 			}
-			
-			
 		} catch (SQLException e){
 			throw new DBException(e.getMessage());
+		}
+		finally {
+			DBConnection.closeStatement(st);
 		}
 	}
 	
@@ -72,6 +128,10 @@ public class SellerDaoJDBC implements SellerDAO {
 		} catch (SQLException e){
 			throw new DBException(e.getMessage());
 		}
+		finally {
+			DBConnection.closeResultSet(rs);
+			DBConnection.closeStatement(st);
+		}
 	}
 
 	
@@ -82,7 +142,8 @@ public class SellerDaoJDBC implements SellerDAO {
 		try {
 			st = connection.prepareStatement("SELECT seller.*, department.Name AS DepName " +
 					"FROM seller " +
-					"INNER JOIN department ON seller.DepartmentId = department.Id " +
+					"INNER JOIN department " +
+					"ON seller.DepartmentId = department.Id " +
 					"ORDER BY seller.Id;");
 			rs = st.executeQuery();
 			List<Seller> data = new ArrayList<>();
@@ -100,6 +161,10 @@ public class SellerDaoJDBC implements SellerDAO {
 			return data;
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
+		}
+		finally {
+			DBConnection.closeResultSet(rs);
+			DBConnection.closeStatement(st);
 		}
 	}
 	
@@ -133,6 +198,10 @@ public class SellerDaoJDBC implements SellerDAO {
 			return list;
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
+		}
+		finally {
+			DBConnection.closeResultSet(rs);
+			DBConnection.closeStatement(st);
 		}
 	}
 	
