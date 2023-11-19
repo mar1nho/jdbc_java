@@ -1,8 +1,10 @@
 package application;
 
+import db.DBException;
 import model.dao.DAO_Factory;
 import model.dao.DepartmentDAO;
 import model.entities.Department;
+import model.entities.Seller;
 
 import java.util.List;
 import java.util.Optional;
@@ -125,6 +127,24 @@ public class DepartmentCommand {
 	}
 	
 	public static void findAllSellersWorkingOnDepartmentById() {
+		Scanner sc = new Scanner(System.in);
+		Menus.Command("Enter an ID to find all Sellers on that Department: ");
+		int id = Menus.inputMismatchException(sc);
+		
+		List<Seller> data = departmentDAO.findAllSellersOnDepartmentById(id);
+		
+		if (data.isEmpty()) {
+			Menus.CommandERR("Result on sellers with ID " + id + " has return 0.");
+		}
+		if (!data.isEmpty()) {
+			for (Seller seller : data) {
+				Menus.sleep(450);
+				String sell = String.format("Name: %s\nDepartment: %s \nBase Salary: %.2f \nE-Mail: %s\n", seller.getName(), seller.getDepartment().getName(), seller.getBaseSalary(), seller.getEmail());
+				Menus.CommandF(sell + "\n");
+			}
+		} else {
+			throw new DBException("Unexpected error, please, open an Issue Request on Github");
+		}
 	}
 	
 }

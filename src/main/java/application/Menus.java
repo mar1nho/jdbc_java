@@ -119,6 +119,11 @@ public class Menus {
 		System.out.flush();
 	}
 	
+	public static void CommandF(String txt) {
+		System.out.printf(txt);
+		System.out.flush();
+	}
+	
 	public static void CommandERR(String txt) {
 		System.err.println(txt);
 		System.out.flush();

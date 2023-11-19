@@ -148,7 +148,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 		ResultSet rs = null;
 		try {
 			ps = connection.prepareStatement(
-					"SELECT department.*, seller.* " +
+					"SELECT department.*, seller.*, seller.Name as SellName " +
 							"FROM department " +
 							"INNER JOIN seller " +
 							"ON department.Id = seller.DepartmentId " +
@@ -177,10 +177,11 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 		return dep;
 	}
 	
+	
 	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
 		Seller obj = new Seller();
 		obj.setId(rs.getInt("Id"));
-		obj.setName(rs.getString("Name"));
+		obj.setName(rs.getString("SellName"));
 		obj.setEmail(rs.getString("Email"));
 		obj.setBaseSalary(rs.getDouble("BaseSalary"));
 		obj.setBirthDate(rs.getDate("BirthDate"));
