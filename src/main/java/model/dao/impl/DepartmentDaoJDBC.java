@@ -32,13 +32,12 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 				if (rs.next()){
 					int id = rs.getInt(1);
 					obj.setId(id);
-					System.err.print("Done, department registered: ");
+					System.err.print("Done, department registered: " + obj.getName() + "\n");
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException e) {
 						throw new RuntimeException(e);
 					}
-					System.out.print(rs.getString(2));
 				}
 				DBConnection.closeResultSet(rs);
 			} else {
