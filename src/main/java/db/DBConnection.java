@@ -9,41 +9,41 @@ public class DBConnection {
 	
 	private static Connection connection = null;
 	
-	public static Connection getConnection(){
-		if (connection == null){
+	public static Connection getConnection() {
+		if (connection == null) {
 			try {
 				Properties properties = loadProperties();
 				String url = properties.getProperty("dburl");
 				connection = DriverManager.getConnection(url, properties);
-			} catch (SQLException e){
+			} catch (SQLException e) {
 				throw new DBException(e.getMessage());
 			}
 		}
 		return connection;
 	}
 	
-	private static Properties loadProperties(){
-		try (FileInputStream fs = new FileInputStream("src/main/resources/db.properties")){
+	private static Properties loadProperties() {
+		try (FileInputStream fs = new FileInputStream("src/main/resources/db.properties")) {
 			Properties properties = new Properties();
 			properties.load(fs);
 			return properties;
-		} catch (IOException e){
+		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
 	
-	public static void closeConnection(){
-		if (connection != null){
-			try{
+	public static void closeConnection() {
+		if (connection != null) {
+			try {
 				connection.close();
-			} catch (SQLException e){
+			} catch (SQLException e) {
 				throw new DBException(e.getMessage());
 			}
 		}
 	}
 	
-	public static void closeStatement(Statement statement){
-		if (statement != null){
+	public static void closeStatement(Statement statement) {
+		if (statement != null) {
 			try {
 				statement.close();
 			} catch (SQLException e) {
@@ -52,8 +52,8 @@ public class DBConnection {
 		}
 	}
 	
-	public static void closeResultSet(ResultSet resultSet){
-		if (resultSet != null){
+	public static void closeResultSet(ResultSet resultSet) {
+		if (resultSet != null) {
 			try {
 				resultSet.close();
 			} catch (SQLException e) {

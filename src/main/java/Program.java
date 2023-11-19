@@ -1,9 +1,16 @@
 import application.Menus;
 
-public class Program {
+import javax.swing.*;
+
+public class Program implements Runnable {
+	
 	public static void main(String[] args) {
-		while (true){
-			Menus.mainMenu();
-		}
+		Program program = new Program();
+		program.run();
+	}
+	
+	@Override
+	public void run() {
+		SwingUtilities.invokeLater(Menus::mainMenu);
 	}
 }

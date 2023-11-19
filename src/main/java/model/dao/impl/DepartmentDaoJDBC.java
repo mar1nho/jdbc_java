@@ -6,15 +6,15 @@ import model.dao.DepartmentDAO;
 import model.entities.Department;
 import model.entities.Seller;
 
-import java.nio.channels.SeekableByteChannel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DepartmentDaoJDBC implements DepartmentDAO {
+	
 	private final Connection connection;
 	
-	public DepartmentDaoJDBC(Connection connection){
+	public DepartmentDaoJDBC(Connection connection) {
 		this.connection = connection;
 	}
 	
@@ -22,14 +22,14 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 	public void insert(Department obj) {
 		PreparedStatement ps = null;
 		try {
-			ps = connection.prepareStatement("INSERT INTO department (Name) VALUES (?)",Statement.RETURN_GENERATED_KEYS);
+			ps = connection.prepareStatement("INSERT INTO department (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, obj.getName());
 			
 			int rowsAffected = ps.executeUpdate();
 			
-			if (rowsAffected>0){
+			if (rowsAffected > 0) {
 				ResultSet rs = ps.getGeneratedKeys();
-				if (rs.next()){
+				if (rs.next()) {
 					int id = rs.getInt(1);
 					obj.setId(id);
 					System.err.print("Done, department registered: " + obj.getName() + "\n");
@@ -44,10 +44,9 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 				throw new DBException("Unexpected error! No rows affected.");
 			}
 			
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeStatement(ps);
 		}
 	}
@@ -61,14 +60,12 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 			ps.setInt(2, obj.getId());
 			
 			int rA = ps.executeUpdate();
-			if (rA > 0){
+			if (rA > 0) {
 				System.err.println("Done! Department updated: " + obj.getName());
 			}
-			
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeStatement(ps);
 		}
 	}
@@ -82,19 +79,18 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 			
 			int rA = ps.executeUpdate();
 			
-			if (rA > 0){
+			if (rA > 0) {
 				ResultSet rs = ps.getGeneratedKeys();
-				if(rs.next()){
+				if (rs.next()) {
 					System.err.println("Department deleted: " + rs.getString("Name"));
 				}
 				DBConnection.closeResultSet(rs);
 			} else {
 				throw new DBException("Unexpected error, ID may not exist in DataBase!");
 			}
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeStatement(ps);
 		}
 	}
@@ -109,11 +105,12 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 			
 			rs = ps.executeQuery();
 			
-			if (rs.next()){
+			if (rs.next()) {
 				return instantiateDepartment(rs);
 			}
-			if (!rs.next()){
-				System.err.println("No department found with ID " + id);
+			if (!rs.next()) {
+				System.err.println("No department found with ID: " + id);
+				return null;
 			}
 			return new Department();
 		} catch (SQLException e) {
@@ -129,15 +126,15 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = connection.prepareStatement("SELECT * FROM department");
+			ps = connection.prepareStatement("SELECT * FROM department ORDER BY Id");
 			rs = ps.executeQuery();
 			List<Department> data = new ArrayList<>();
-			while (rs.next()){
+			while (rs.next()) {
 				Department department = instantiateDepartment(rs);
 				data.add(department);
 			}
 			return data;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
 		} finally {
 			DBConnection.closeResultSet(rs);
@@ -151,21 +148,21 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 		ResultSet rs = null;
 		try {
 			ps = connection.prepareStatement(
-						"SELECT department.*, seller.* " +
-								"FROM department " +
-								"INNER JOIN seller " +
-								"ON department.Id = seller.DepartmentId " +
-								"WHERE seller.DepartmentId = ?;");
+					"SELECT department.*, seller.* " +
+							"FROM department " +
+							"INNER JOIN seller " +
+							"ON department.Id = seller.DepartmentId " +
+							"WHERE seller.DepartmentId = ?;");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			List<Seller> sellers = new ArrayList<>();
- 			while (rs.next()){
+			while (rs.next()) {
 				Department department = instantiateDepartment(rs);
 				Seller seller = instantiateSeller(rs, department);
 				sellers.add(seller);
 			}
 			return sellers;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
 		} finally {
 			DBConnection.closeResultSet(rs);

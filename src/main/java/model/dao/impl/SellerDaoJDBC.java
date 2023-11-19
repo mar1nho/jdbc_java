@@ -2,19 +2,17 @@ package model.dao.impl;
 
 import db.DBConnection;
 import db.DBException;
-
 import model.dao.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
-
 
 import java.sql.*;
 import java.util.*;
 
 public class SellerDaoJDBC implements SellerDAO {
-	private Connection connection;
+	private final Connection connection;
 	
-	public SellerDaoJDBC(Connection connection){
+	public SellerDaoJDBC(Connection connection) {
 		this.connection = connection;
 	}
 	
@@ -35,7 +33,7 @@ public class SellerDaoJDBC implements SellerDAO {
 			
 			if (rowsAffected > 0) {
 				ResultSet rs = ps.getGeneratedKeys();
-				if (rs.next()){
+				if (rs.next()) {
 					int id = rs.getInt(1);
 					obj.setId(id);
 					System.err.print("Done, seller registered: ");
@@ -52,8 +50,7 @@ public class SellerDaoJDBC implements SellerDAO {
 			}
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeStatement(ps);
 		}
 	}
@@ -63,7 +60,8 @@ public class SellerDaoJDBC implements SellerDAO {
 		PreparedStatement ps = null;
 		try {
 			ps = connection.prepareStatement("UPDATE seller SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? " +
-											     "WHERE Id = ?");
+					"WHERE Id = ?");
+			
 			ps.setString(1, obj.getName());
 			ps.setString(2, obj.getEmail());
 			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
@@ -72,10 +70,9 @@ public class SellerDaoJDBC implements SellerDAO {
 			ps.setInt(6, obj.getId());
 			
 			int rowsAffected = ps.executeUpdate();
-			if (rowsAffected > 0){
+			if (rowsAffected > 0) {
 				System.err.println("Done! Seller updated: " + obj.getName());
 			}
-			
 		} catch (SQLException exception) {
 			throw new DBException(exception.getMessage());
 		}
@@ -86,19 +83,19 @@ public class SellerDaoJDBC implements SellerDAO {
 		PreparedStatement st = null;
 		try {
 			Optional<Seller> seller = Optional.ofNullable(findById(id));
-			if (seller.isEmpty()){
+			if (seller.isEmpty()) {
 				System.err.println("None ID compatible found in DataBase!");
-			} if (seller.isPresent()){
+			}
+			if (seller.isPresent()) {
 				st = connection.prepareStatement("DELETE FROM seller WHERE id = ?");
 				st.setInt(1, id);
 				
 				int affectedRows = st.executeUpdate();
 				System.out.println("Rows affected: " + affectedRows);
 			}
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeStatement(st);
 		}
 	}
@@ -117,23 +114,22 @@ public class SellerDaoJDBC implements SellerDAO {
 			
 			rs = st.executeQuery();
 			
-			if(rs.next()){
+			if (rs.next()) {
 				Department dep = instantiateDepartment(rs);
 				return instantiateSeller(rs, dep);
 			}
-			if (!rs.next()){
+			if (!rs.next()) {
 				System.err.println("No Seller found with ID " + id);
 			}
 			return new Seller();
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeResultSet(rs);
 			DBConnection.closeStatement(st);
 		}
 	}
-
+	
 	
 	@Override
 	public List<Seller> findAll() {
@@ -149,9 +145,9 @@ public class SellerDaoJDBC implements SellerDAO {
 			List<Seller> data = new ArrayList<>();
 			Map<Integer, Department> map = new HashMap<>();
 			
-			while (rs.next()){
+			while (rs.next()) {
 				Department dep = map.get(rs.getInt("DepartmentId"));
-				if (dep == null){
+				if (dep == null) {
 					dep = instantiateDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
 				}
@@ -161,8 +157,7 @@ public class SellerDaoJDBC implements SellerDAO {
 			return data;
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeResultSet(rs);
 			DBConnection.closeStatement(st);
 		}
@@ -185,10 +180,10 @@ public class SellerDaoJDBC implements SellerDAO {
 			Map<Integer, Department> map = new HashMap<>();
 			
 			//Can be 0, so while he has next it goes...
-			while (rs.next()){
+			while (rs.next()) {
 				//Create a test if the department instance already exists, so it doesn't create another one.
 				Department dep = map.get(rs.getInt("DepartmentId"));
-				if (dep == null){
+				if (dep == null) {
 					dep = instantiateDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
 				}
@@ -198,8 +193,7 @@ public class SellerDaoJDBC implements SellerDAO {
 			return list;
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
-		}
-		finally {
+		} finally {
 			DBConnection.closeResultSet(rs);
 			DBConnection.closeStatement(st);
 		}
